@@ -5,17 +5,15 @@ coin_vals = {'pennies':.01,'nickles':.05,'dimes':.10,'quarters':.25,'half_dollar
 
 class User:
     current_bank_id = 0
-    name = "name"
-    accounts = []
+    name = "test"
+    num_of_accounts = 0
 
-    def __init__(self, bank_id, name, accounts):
-        self._name = "name"
-        User._name = User.name
-        self._accounts = []
-        User._accounts = User.accounts
-        User.current_bank_id = User.current_bank_id + 1
+    def __init__(self, bank_id, name, num_of_accounts):
         self._bank_id = User.current_bank_id
-
+        User.current_bank_id = User.current_bank_id + 1
+        self._name = User.name
+        User._num_of_accounts = User.num_of_accounts
+        self._num_of_accounts = User.num_of_accounts
 
     def new_user(self,name):
         self._name = name
@@ -25,16 +23,15 @@ class User:
 class Account:
     current_acct_nu = 100
 
-    def __init__(self, acct_nu, name, balance, pennies, nickles, dimes, quarters, half_dollars, dollars):
+    def __init__(self, acct_nu):
         self._acct_nu = Account.current_acct_nu + 1
-        self._name = name
-        self._balance = balance
-        self._pennies = pennies
-        self._nickles = nickles
-        self._dimes = dimes
-        self._quarters = quarters
-        self._half_dollars = half_dollars
-        self._dollars = dollars
+        self._balance = 0
+        self._pennies = 0
+        self._nickles = 0
+        self._dimes = 0
+        self._quarters = 0
+        self._half_dollars = 0
+        self._dollars = 0
 
     def __str__(self):
         #return str(self, name)
@@ -59,8 +56,9 @@ class Account:
     def withdraw(self, acct_nu, amount):
         pass
 
-    def get_balance(self, acct_nu):
-        pass
+    @property
+    def balance(self):
+        return self._pennies + self._nickles + self._dimes + self._quarters + self._half_dollars + self._dollars
 
     def transfer(self, acct_to, acct_from, amount):
         pass
@@ -91,7 +89,7 @@ def interface():
             x = 2
             if x == 2:
                 os.system('cls' if os.name == 'nt' else 'clear')
-                print("Welcome, {} -- ID#: {}\n----------------------------\nSelect account: \n1) QUIT\n2) Create new savings account\n3) {}\n----------------------------".format(User.name,User.current_bank_id,User.accounts))
+                print("Welcome, {} -- ID#: {}\n----------------------------\nSelect account: \n1) QUIT\n2) Create new savings account\n3) {}\n----------------------------".format(User.name,welcome,User.num_of_accounts))
                 option = int(input("-> "))
                 if option == 1:
                     os.system('cls' if os.name == 'nt' else 'clear')
@@ -99,14 +97,18 @@ def interface():
                     os._exit(0)
                 elif option == 2:
                     #NEW BANK ACCOUNT FUNCTION HERE
+                    User.num_of_accounts = User.num_of_accounts + 1
+                    next_acct = Account.current_acct_nu + 1
+                    Account.__init__()
                     x = 1
                 else:
                     x = 3
                 while x == 3:
                     os.system('cls' if os.name == 'nt' else 'clear')
-                    print("What do you want to do?\n----------------------------\n1) Back...\n2) Withdraw\n3) Deposit\n4) Transfer\n5) Get Balance\n-----------------------------")
+                    print("Account number: {}\nWhat do you want to do?\n----------------------------\n1) Back...\n2) Withdraw\n3) Deposit\n4) Transfer\n5) Get Balance\n-----------------------------")
                     option = int(input("(1-5) -> "))
                     if option == 5:
+                        Account.
                         raw_input("Press Enter to continue...")
                         pass
                     elif option == 4:
