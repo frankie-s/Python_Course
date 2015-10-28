@@ -8,10 +8,20 @@ class Bank:
         self._name = name
         self._accounts = {}
 
+    def save(self):
+        writer = csv.writer(open('money_bag_data.csv', 'ab'))
+        for k in self._accounts.items():
+                writer.writerow([k[0], k[1].owner, k[1].acct_name, k[1].p, k[1].n, k[1].di, k[1].q, k[1].h, k[1].do, k[1].bug])
+
     @property
     def largest(self):
-        inverse = [(value, key) for key, value in self._accounts.items()]
-        return max(inverse)[1]
+        total_lst = []
+        name_lst = []
+        for key, val in self._accounts.items():
+            print("Account Name: {1}  \t  Balance: {0:>10.2f} USD".format(self._accounts[key].balance, self._accounts[key].acct_name))
+            total_lst.append(self._accounts[key].balance)
+            name_lst.append(self._accounts[key].acct_name)
+        return name_lst[total_lst.index(max(total_lst))]
 
     @property
     def grand_total(self):
@@ -57,31 +67,69 @@ class Account:
         return self._remove
 
     @property
-    def balance(self):
-        return self._p * .01 + self._n * .05 + self._di * .10 + self._q * .25 + self._h * .50 + self._do * 1.00
-
-    @property
     def owner(self):
         return self._owner
+
+    @property
+    def acct_name(self):
+        return self._acct_name
 
     @property
     def bug(self):
         return self._bug_out
 
+    @property
+    def p(self):
+        return self._p
+
+    @property
+    def n(self):
+        return self._n
+
+    @property
+    def di(self):
+        return self._di
+
+    @property
+    def q(self):
+        return self._q
+
+    @property
+    def h(self):
+        return self._h
+
+    @property
+    def do(self):
+        return self._do
+
+    @property
+    def balance(self):
+        return (self._p * .01) + (self._n * .05) + (self._di * .10) + (self._q * .25) + (self._h * .50) + (self._do * 1.00)
+
 
 def main():
     os.system('cls' if os.name == 'nt' else 'clear')
     my_bank = Bank("First Bank of Matratze")  # make the bank bank
+    exists = os.path.isfile('money_bag_data.csv')  # check if file exists
+    if exists == True:
+            load = raw_input("Welcome Back! Do you want to load previously saved data?:(y,n) ")
+            if load == "y":
+                reader = csv.reader(open("money_bag_data.csv"))
+                for row in reader:
+                    new_account = Account(row[1], row[2], int(row[3]), int(row[4]), int(row[5]), int(row[6]), int(row[7]), int(row[8]), row[9])
+                    my_bank._accounts.update({row[0]: new_account})
+                print("Data Loaded.")
+                raw_input("**Press Enter to continue...")
     x = 0
     while x == 0:
         os.system('cls' if os.name == 'nt' else 'clear')
         print("----------------------------\nWelcome to the {}!\nPlease select an option: "
-              "\n1) QUIT\n2) Grand Total in Bank\n3) Largest Account\n4) Make New Account(s)"
+              "\n1) SAVE & QUIT\n2) Grand Total in Bank\n3) Largest Account\n4) Make New Account(s)"
               "\n5) Edit Account(s)\n----------------------------".format(my_bank._name))
         option = raw_input("-> ")
         if option == '1':
             os.system('cls' if os.name == 'nt' else 'clear')
-            # SAVE FUNCTION GOES HERE save_to_disk()
+            my_bank.save()
             os._exit(0)
         elif option == '2':
             print("Total: ${0:.2f}".format(my_bank.grand_total))  # all_accounts.balance)
@@ -134,75 +182,80 @@ def main():
                     print"----------------------------"
                     edit = raw_input("Enter nick-name of account to edit: ")
                     x = 2
-                while x == 2:
-                    os.system('cls' if os.name == 'nt' else 'clear')
-                    print("Account nick-name: {}\nWhat do you want to do?\n----------------------------\n1) Back...\n2) Withdraw"
-                          "\n3) Deposit\n4) Transfer\n5) Get Balance\n6) Convert to Bitcoin\n-----------------------------".format(edit))
-                    option = raw_input("(1-5) -> ")
-                    if option == '6':
-                        bcx = my_bank._accounts[edit].balance / 303.76
-                        print"Balance in Bitcoin: {0:.2f} BCX".format(bcx)
-                        raw_input("\n**Press Enter to continue...")
-                    elif option == '5':
-                        print("Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
-                        raw_input("\n**Press Enter to continue...")
-                    elif option == '4':
-                        if len(my_bank._accounts.items()) <= 1:
-                            print("Create a second account first.")
+                    while x == 2:
+                        os.system('cls' if os.name == 'nt' else 'clear')
+                        print("Account nick-name: {}\nWhat do you want to do?\n----------------------------\n1) Back...\n2) Withdraw"
+                              "\n3) Deposit\n4) Transfer\n5) Get Balance\n6) Exchange Rates\n-----------------------------".format(edit))
+                        option = raw_input("(1-5) -> ")
+                        if option == '6':
+                            bcx = my_bank._accounts[edit].balance / 303.76
+                            euro = my_bank._accounts[edit].balance * 0.90
+                            yen = my_bank._accounts[edit].balance * 120.57
+                            print(u"Balance in Bitcoin: {0:.4f} \u0243".format(bcx))
+                            print("Balance in Euro: {0:.2f} \xe2\x82\xac".format(euro))
+                            print(u"Balance in Yen: {0:.2f} \u00A5".format(yen))
                             raw_input("\n**Press Enter to continue...")
-                        else:
-                            acct_to = raw_input("Enter recieving account nick-name: ")
-                            if my_bank._accounts[edit].owner != my_bank._accounts[acct_to].owner:
-                                print "Error, cant not transfer coins from an account to an account owned by a different person."
-                            else:
-                                print("-----------------------------\nCurrent Account Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
-                                print("Recipient Account Balance: ${0:.2f}\n-----------------------------".format(my_bank._accounts[acct_to].balance))
-                                p = int(input("Number of pennies to transfer -> "))
-                                n = int(input("Number of nickles to transfer -> "))
-                                di = int(input("Number of dimes to transfer -> "))
-                                q = int(input("Number of quarters to transfer -> "))
-                                h = int(input("Number of half-dollars to transfer -> "))
-                                do = int(input("Number of dollars to transfer -> "))
-                                my_bank._accounts[edit].withdraw(p, n, di, q, h, do)
-                                if my_bank._accounts[edit].balance < 0:
-                                    print("OVERDRAWN! Action declared invalid and undone! You will now be fined a huge ridiculous fee!")
-                                    my_bank._accounts[edit].deposit(p, n, di, q, h, do)
-                                    print("Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
-                                else:
-                                    my_bank._accounts[acct_to].deposit(p, n, di, q, h, do)
-                                    print("Transfer Compleate.")
-                                    print("New Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
-                            raw_input("\n**Press Enter to continue...")
-                    elif option == '3':
-                        p = int(input("Number of pennies to deposit -> "))
-                        n = int(input("Number of nickles to deposit -> "))
-                        di = int(input("Number of dimes to deposit -> "))
-                        q = int(input("Number of quarters to deposit -> "))
-                        h = int(input("Number of half-dollars to deposit -> "))
-                        do = int(input("Number of dollars to deposit -> "))
-                        my_bank._accounts[edit].deposit(p, n, di, q, h, do)
-                        print("New Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
-                        raw_input("\n**Press Enter to continue...")
-                    elif option == '2':
-                        p = int(input("Number of pennies to withdraw -> "))
-                        n = int(input("Number of nickles to withdraw -> "))
-                        di = int(input("Number of dimes to withdraw -> "))
-                        q = int(input("Number of quarters to withdraw -> "))
-                        h = int(input("Number of half-dollars to withdraw -> "))
-                        do = int(input("Number of dollars to withdraw -> "))
-                        my_bank._accounts[edit].withdraw(p, n, di, q, h, do)
-                        if my_bank._accounts[edit].balance < 0:
-                            print("OVERDRAWN! Action declared invalid and automatically undone! You will now be fined a huge ridiculous fee!")
-                            my_bank._accounts[edit].deposit(p, n, di, q, h, do)
+                        elif option == '5':
                             print("Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
-                        else:
+                            raw_input("\n**Press Enter to continue...")
+                        elif option == '4':
+                            if len(my_bank._accounts.items()) <= 1:
+                                print("Create a second account first.")
+                                raw_input("\n**Press Enter to continue...")
+                            else:
+                                acct_to = raw_input("Enter recieving account nick-name: ")
+                                if my_bank._accounts[edit].owner != my_bank._accounts[acct_to].owner:
+                                    print "Error, cant not transfer coins from an account to an account owned by a different person."
+                                else:
+                                    print("-----------------------------\nCurrent Account Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
+                                    print("Recipient Account Balance: ${0:.2f}\n-----------------------------".format(my_bank._accounts[acct_to].balance))
+                                    p = int(input("Number of pennies to transfer -> "))
+                                    n = int(input("Number of nickles to transfer -> "))
+                                    di = int(input("Number of dimes to transfer -> "))
+                                    q = int(input("Number of quarters to transfer -> "))
+                                    h = int(input("Number of half-dollars to transfer -> "))
+                                    do = int(input("Number of dollars to transfer -> "))
+                                    my_bank._accounts[edit].withdraw(p, n, di, q, h, do)
+                                    if my_bank._accounts[edit].balance < 0:
+                                        print("OVERDRAWN! Action declared invalid and undone! You will now be fined a huge ridiculous fee!")
+                                        my_bank._accounts[edit].deposit(p, n, di, q, h, do)
+                                        print("Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
+                                    else:
+                                        my_bank._accounts[acct_to].deposit(p, n, di, q, h, do)
+                                        print("Transfer Compleate.")
+                                        print("New Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
+                                raw_input("\n**Press Enter to continue...")
+                        elif option == '3':
+                            p = int(input("Number of pennies to deposit -> "))
+                            n = int(input("Number of nickles to deposit -> "))
+                            di = int(input("Number of dimes to deposit -> "))
+                            q = int(input("Number of quarters to deposit -> "))
+                            h = int(input("Number of half-dollars to deposit -> "))
+                            do = int(input("Number of dollars to deposit -> "))
+                            my_bank._accounts[edit].deposit(p, n, di, q, h, do)
                             print("New Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
-                        raw_input("\n**Press Enter to continue...")
-                    elif option == '1':
-                        x = 0
-                    else:
-                        print("Error: Enter (1-5): ")
-                        raw_input("\n**Press Enter to continue...")
+                            raw_input("\n**Press Enter to continue...")
+                        elif option == '2':
+                            print("Balance: ${0:.2f}\n-----------------------------".format(my_bank._accounts[edit].balance))
+                            p = int(input("Number of pennies to withdraw -> "))
+                            n = int(input("Number of nickles to withdraw -> "))
+                            di = int(input("Number of dimes to withdraw -> "))
+                            q = int(input("Number of quarters to withdraw -> "))
+                            h = int(input("Number of half-dollars to withdraw -> "))
+                            do = int(input("Number of dollars to withdraw -> "))
+                            my_bank._accounts[edit].withdraw(p, n, di, q, h, do)
+                            if my_bank._accounts[edit].balance < 0:
+                                print("OVERDRAWN! Action declared invalid and automatically undone! You will now be fined a huge ridiculous fee!")
+                                my_bank._accounts[edit].deposit(p, n, di, q, h, do)
+                                print("Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
+                            else:
+                                print("New Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
+                            raw_input("\n**Press Enter to continue...")
+                        elif option == '1':
+                            x = 0
+                        else:
+                            print("Error: Enter (1-5): ")
+                            raw_input("\n**Press Enter to continue...")
         else:
             print("Error: Enter (1-5): ")
             raw_input("\n**Press Enter to continue...")
