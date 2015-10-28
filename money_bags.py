@@ -1,5 +1,6 @@
-__author__ = 'frankie'
 import os
+import csv
+__author__ = 'frankie'
 
 
 class Bank:
@@ -23,62 +24,67 @@ class Bank:
 class Account:
     current_acct_nu = 100
 
-    def __init__(self, owner, acct_name, pennies, nickles, dimes, quarters, half_dollars, dollars, bug_out):
+    def __init__(self, owner, acct_name, p, n, di, q, h, do, bug_out):
         self._owner = owner
         self._acct_name = acct_name
         self._bug_out = bug_out
-        self._pennies = pennies
-        self._nickles = nickles
-        self._dimes = dimes
-        self._quarters = quarters
-        self._half_dollars = half_dollars
-        self._dollars = dollars
+        self._p = p
+        self._n = n
+        self._di = di
+        self._q = q
+        self._h = h
+        self._do = do
         self._balance = 0
 
-    def deposit(self, pennies, nickles, dimes, quarters, half_dollars, dollars):
-        self._pennies = self._pennies + pennies
-        self._nickles = self._nickles + nickles
-        self._dimes = self._dimes + dimes
-        self._quarters = self._quarters + quarters
-        self._half_dollars = self._half_dollars + half_dollars
-        self._dollars = self._dollars + dollars
-        self._add = pennies*.01 + nickles*.05 + dimes*.10 + quarters*.25 + half_dollars*.50 + dollars*1.00
+    def deposit(self, p, n, di, q, h, do):
+        self._p += p
+        self._n += n
+        self._di += di
+        self._q += q
+        self._h += h
+        self._do += do
+        self._add = p * .01 + n * .05 + di * .10 + q * .25 + h * .50 + do * 1.00
         return self._add
 
-    def withdraw(self, pennies, nickles, dimes, quarters, half_dollars, dollars):
-        self._pennies = self._pennies - pennies
-        self._nickles = self._nickles - nickles
-        self._dimes = self._dimes - dimes
-        self._quarters = self._quarters - quarters
-        self._half_dollars = self._half_dollars - half_dollars
-        self._dollars = self._dollars - dollars
-        self._remove =  pennies*.01 + nickles*.05 + dimes*.10 + quarters*.25 + half_dollars*.50 + dollars*1.00
+    def withdraw(self, p, n, di, q, h, do):
+        self._p -= p
+        self._n -= n
+        self._di -= di
+        self._q -= q
+        self._h -= h
+        self._do -= do
+        self._remove =  p * .01 + n * .05 + di * .10 + q * .25 + h * .50 + do * 1.00
         return self._remove
 
     @property
     def balance(self):
-        return self._pennies*.01 + self._nickles*.05 + self._dimes*.10 + self._quarters*.25 + self._half_dollars*.50 + self._dollars*1.00
+        return self._p * .01 + self._n * .05 + self._di * .10 + self._q * .25 + self._h * .50 + self._do * 1.00
 
     @property
     def owner(self):
         return self._owner
 
+    @property
+    def bug(self):
+        return self._bug_out
+
 
 def main():
     os.system('cls' if os.name == 'nt' else 'clear')
-    my_bank = Bank("First Bank of Matratze") # make the bank bank
+    my_bank = Bank("First Bank of Matratze")  # make the bank bank
     x = 0
     while x == 0:
         os.system('cls' if os.name == 'nt' else 'clear')
-        print("----------------------------\nWelcome to the {}!\nPlease select an option: \n1) QUIT\n2) Grand Total in Bank\n"
-              "3) Largest Account\n4) Make New Account(s)\n5) Edit Account(s)\n----------------------------".format(my_bank._name))
+        print("----------------------------\nWelcome to the {}!\nPlease select an option: "
+              "\n1) QUIT\n2) Grand Total in Bank\n3) Largest Account\n4) Make New Account(s)"
+              "\n5) Edit Account(s)\n----------------------------".format(my_bank._name))
         option = raw_input("-> ")
         if option == '1':
             os.system('cls' if os.name == 'nt' else 'clear')
-            #SAVE FUNCTION GOES HERE save_to_disk()
+            # SAVE FUNCTION GOES HERE save_to_disk()
             os._exit(0)
         elif option == '2':
-            print("Total: ${0:.2f}".format(my_bank.grand_total)) #all_accounts.balance)
+            print("Total: ${0:.2f}".format(my_bank.grand_total))  # all_accounts.balance)
             raw_input("\n**Press Enter to continue...")
             os.system('cls' if os.name == 'nt' else 'clear')
             x = 0
@@ -87,14 +93,14 @@ def main():
                 print("Create an account first.")
                 raw_input("\n**Press Enter to continue...")
             else:
-                print("The largest account at this bank is {}.".format(my_bank.largest)) #all_accounts.balance)
+                print("The largest account at this bank is {}.".format(my_bank.largest))  # all_accounts.balance)
                 raw_input("\n**Press Enter to continue...")
                 os.system('cls' if os.name == 'nt' else 'clear')
             x = 0
         elif option == '4':
             os.system('cls' if os.name == 'nt' else 'clear')
-            next = 'y'
-            while next == 'y':
+            do_next = 'y'
+            while do_next == 'y':
                 print("----------------------------\nLets create new accounts!\n")
                 owner = raw_input("Account owner -> ")
                 name = raw_input("Account nick-name -> ")
@@ -105,13 +111,14 @@ def main():
                 h = int(input("Number of half-dollars to deposit -> "))
                 do = int(input("Number of dollars to deposit -> "))
                 bugout = raw_input("Would you like this account to be a bug-out bag?(y,n): ")
-                new_account = Account(owner,name,p,n,di,q,h,do,bugout)
+                new_account = Account(owner, name, p, n, di, q, h, do, bugout)
                 my_bank._accounts.update({name: new_account})
-                next = raw_input("Create another account?(y,n): ")
+                do_next = raw_input("Create another account?(y,n): ")
                 os.system('cls' if os.name == 'nt' else 'clear')
             print("All account(s): ")
-            for key in my_bank._accounts:
-                print key
+            for k in my_bank._accounts.items():
+                print('Nick-Name: {0}\tOwner: {1}\tBugout?: {2}'.format(k[0], k[1].owner, k[1].bug))
+            print"----------------------------"
             raw_input("\n**Press Enter to continue...")
         elif option == '5':
             x = 1
@@ -122,8 +129,8 @@ def main():
                     x = 0
                 else:
                     print("All account(s): ")
-                    for kv in my_bank._accounts.items():
-                        print kv[0],'\t',kv[1]
+                    for k in my_bank._accounts.items():
+                        print('Nick-Name: {0}\tOwner: {1}\tBugout?: {2}'.format(k[0], k[1].owner, k[1].bug))
                     print"----------------------------"
                     edit = raw_input("Enter nick-name of account to edit: ")
                     x = 2
@@ -156,13 +163,13 @@ def main():
                                 q = int(input("Number of quarters to transfer -> "))
                                 h = int(input("Number of half-dollars to transfer -> "))
                                 do = int(input("Number of dollars to transfer -> "))
-                                my_bank._accounts[edit].withdraw(p,n,di,q,h,do)
+                                my_bank._accounts[edit].withdraw(p, n, di, q, h, do)
                                 if my_bank._accounts[edit].balance < 0:
                                     print("OVERDRAWN! Action declared invalid and undone! You will now be fined a huge ridiculous fee!")
-                                    my_bank._accounts[edit].deposit(p,n,di,q,h,do)
+                                    my_bank._accounts[edit].deposit(p, n, di, q, h, do)
                                     print("Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
                                 else:
-                                    my_bank._accounts[acct_to].deposit(p,n,di,q,h,do)
+                                    my_bank._accounts[acct_to].deposit(p, n, di, q, h, do)
                                     print("Transfer Compleate.")
                                     print("New Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
                             raw_input("\n**Press Enter to continue...")
@@ -173,7 +180,7 @@ def main():
                         q = int(input("Number of quarters to deposit -> "))
                         h = int(input("Number of half-dollars to deposit -> "))
                         do = int(input("Number of dollars to deposit -> "))
-                        my_bank._accounts[edit].deposit(p,n,di,q,h,do)
+                        my_bank._accounts[edit].deposit(p, n, di, q, h, do)
                         print("New Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
                         raw_input("\n**Press Enter to continue...")
                     elif option == '2':
@@ -183,10 +190,10 @@ def main():
                         q = int(input("Number of quarters to withdraw -> "))
                         h = int(input("Number of half-dollars to withdraw -> "))
                         do = int(input("Number of dollars to withdraw -> "))
-                        my_bank._accounts[edit].withdraw(p,n,di,q,h,do)
+                        my_bank._accounts[edit].withdraw(p, n, di, q, h, do)
                         if my_bank._accounts[edit].balance < 0:
                             print("OVERDRAWN! Action declared invalid and automatically undone! You will now be fined a huge ridiculous fee!")
-                            my_bank._accounts[edit].deposit(p,n,di,q,h,do)
+                            my_bank._accounts[edit].deposit(p, n, di, q, h, do)
                             print("Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
                         else:
                             print("New Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
@@ -199,7 +206,6 @@ def main():
         else:
             print("Error: Enter (1-5): ")
             raw_input("\n**Press Enter to continue...")
-
 
 
 if __name__ == '__main__':
