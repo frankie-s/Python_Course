@@ -9,7 +9,7 @@ class Bank:
         self._accounts = {}
 
     def save(self):
-        writer = csv.writer(open('money_bag_data.csv', 'ab'))
+        writer = csv.writer(open('transaction_log.csv', 'ab'))
         for k in self._accounts.items():
                 writer.writerow([k[0], k[1].owner, k[1].acct_name, k[1].p, k[1].n, k[1].di, k[1].q, k[1].h, k[1].do, k[1].bug])
 
@@ -18,7 +18,7 @@ class Bank:
         total_lst = []
         name_lst = []
         for key, val in self._accounts.items():
-            print("Account Name: {1}  \t  Balance: {0:>10.2f} USD".format(self._accounts[key].balance, self._accounts[key].acct_name))
+            print("Account Name: {1}  \t  Balance: {0:>5.2f} USD".format(self._accounts[key].balance, self._accounts[key].acct_name))
             total_lst.append(self._accounts[key].balance)
             name_lst.append(self._accounts[key].acct_name)
         return name_lst[total_lst.index(max(total_lst))]
@@ -110,11 +110,11 @@ class Account:
 def main():
     os.system('cls' if os.name == 'nt' else 'clear')
     my_bank = Bank("First Bank of Matratze")  # make the bank bank
-    exists = os.path.isfile('money_bag_data.csv')  # check if file exists
+    exists = os.path.isfile('transaction_log.csv')  # check if file exists
     if exists == True:
             load = raw_input("Welcome Back! Do you want to load previously saved data?:(y,n) ")
             if load == "y":
-                reader = csv.reader(open("money_bag_data.csv"))
+                reader = csv.reader(open("transaction_log.csv"))
                 for row in reader:
                     new_account = Account(row[1], row[2], int(row[3]), int(row[4]), int(row[5]), int(row[6]), int(row[7]), int(row[8]), row[9])
                     my_bank._accounts.update({row[0]: new_account})
@@ -165,7 +165,7 @@ def main():
                 os.system('cls' if os.name == 'nt' else 'clear')
             print("All account(s): ")
             for k in my_bank._accounts.items():
-                print('Nick-Name: {0}\tOwner: {1}\tBugout?: {2}'.format(k[0], k[1].owner, k[1].bug))
+                print('Nick-Name: {0}\tOwner: {1}\tBugout?: {2:>5}'.format(k[0], k[1].owner, k[1].bug))
             print"----------------------------"
             raw_input("\n**Press Enter to continue...")
         elif option == '5':
@@ -179,8 +179,7 @@ def main():
                     print("All account(s): ")
                     for k in my_bank._accounts.items():
                         print('Nick-Name: {0}\tOwner: {1}\tBugout?: {2}'.format(k[0], k[1].owner, k[1].bug))
-                    print"----------------------------"
-                    edit = raw_input("Enter nick-name of account to edit: ")
+                    edit = raw_input("\nEnter nick-name of account to edit: ")
                     x = 2
                     while x == 2:
                         os.system('cls' if os.name == 'nt' else 'clear')
@@ -216,7 +215,25 @@ def main():
                                     h = int(input("Number of half-dollars to transfer -> "))
                                     do = int(input("Number of dollars to transfer -> "))
                                     my_bank._accounts[edit].withdraw(p, n, di, q, h, do)
-                                    if my_bank._accounts[edit].balance < 0:
+                                    if my_bank._accounts[edit].p < 0:
+                                        my_bank._accounts[edit].deposit(p, n, di, q, h, do)
+                                        print("Error: Too few pennies to transfer")
+                                    elif my_bank._accounts[edit].n < 0:
+                                        my_bank._accounts[edit].deposit(p, n, di, q, h, do)
+                                        print("Error: Too few nickles to transfer")
+                                    elif my_bank._accounts[edit].di < 0:
+                                        my_bank._accounts[edit].deposit(p, n, di, q, h, do)
+                                        print("Error: Too few dimes to transfer")
+                                    elif my_bank._accounts[edit].q < 0:
+                                        my_bank._accounts[edit].deposit(p, n, di, q, h, do)
+                                        print("Error: Too few quarters to transfer")
+                                    elif my_bank._accounts[edit].h < 0:
+                                        my_bank._accounts[edit].deposit(p, n, di, q, h, do)
+                                        print("Error: Too few half-dollars to transfer")
+                                    elif my_bank._accounts[edit].do < 0:
+                                        my_bank._accounts[edit].deposit(p, n, di, q, h, do)
+                                        print("Error: Too few dollars to transfer")
+                                    elif my_bank._accounts[edit].balance < 0:
                                         print("OVERDRAWN! Action declared invalid and undone! You will now be fined a huge ridiculous fee!")
                                         my_bank._accounts[edit].deposit(p, n, di, q, h, do)
                                         print("Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
@@ -244,7 +261,25 @@ def main():
                             h = int(input("Number of half-dollars to withdraw -> "))
                             do = int(input("Number of dollars to withdraw -> "))
                             my_bank._accounts[edit].withdraw(p, n, di, q, h, do)
-                            if my_bank._accounts[edit].balance < 0:
+                            if my_bank._accounts[edit].p < 0:
+                                my_bank._accounts[edit].deposit(p, n, di, q, h, do)
+                                print("Error: Too few pennies to withdraw")
+                            elif my_bank._accounts[edit].n < 0:
+                                my_bank._accounts[edit].deposit(p, n, di, q, h, do)
+                                print("Error: Too few nickles to withdraw")
+                            elif my_bank._accounts[edit].di < 0:
+                                my_bank._accounts[edit].deposit(p, n, di, q, h, do)
+                                print("Error: Too few dimes to withdraw")
+                            elif my_bank._accounts[edit].q < 0:
+                                my_bank._accounts[edit].deposit(p, n, di, q, h, do)
+                                print("Error: Too few quarters to withdraw")
+                            elif my_bank._accounts[edit].h < 0:
+                                my_bank._accounts[edit].deposit(p, n, di, q, h, do)
+                                print("Error: Too few half-dollars to withdraw")
+                            elif my_bank._accounts[edit].do < 0:
+                                my_bank._accounts[edit].deposit(p, n, di, q, h, do)
+                                print("Error: Too few dollars to withdraw")
+                            elif my_bank._accounts[edit].balance < 0:
                                 print("OVERDRAWN! Action declared invalid and automatically undone! You will now be fined a huge ridiculous fee!")
                                 my_bank._accounts[edit].deposit(p, n, di, q, h, do)
                                 print("Balance: ${0:.2f}".format(my_bank._accounts[edit].balance))
